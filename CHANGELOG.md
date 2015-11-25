@@ -13,6 +13,7 @@
     + \#52797: Use image size option to trigger image size validation error
     + \#52300: count newlines as two characters in character counter
     + \#52889: Resolve invalid url_regex Regex (reported by Judge's JS)
+    + \#52646: Fix cloning issue when unique attributes also have a length validation
 
 ## 1.2
 
