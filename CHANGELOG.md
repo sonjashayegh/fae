@@ -3,6 +3,21 @@
 ## Unreleased
 
 - enhancements
+- bugs
+
+## 1.2.2
+
+- enhancements
+    + \#52830: Add cancel button to nested forms
+- bugs
+    + \#52680: Add spacing between label and helper text on checkbox fields
+    + \#51982: Vertical checkboxes should be vertical
+    + \#52696: Remove image/file on replace image for nested forms too
+    + Scope validations to current form to prevent main form from being validated on nested submission
+
+## 1.2.1
+
+- enhancements
     + \#51603: Add grouped  options to fae_filter_select
     + \#52306: Add activity icon for the activity log link
     + \#52801: Add validation styles and length support to simple-mde
@@ -14,6 +29,7 @@
     + \#52797: Use image size option to trigger image size validation error
     + \#52300: count newlines as two characters in character counter
     + \#52889: Resolve invalid url_regex Regex (reported by Judge's JS)
+    + Make sure filtering selects don't overlap submit button
     + \#52646: Fix cloning issue when unique attributes also have a length validation
 
 ## 1.2

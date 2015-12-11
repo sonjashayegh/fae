@@ -16,12 +16,15 @@ Fae.form.ajax = {
     this.addEditLinks();
     this.addEditSubmission();
 
+    this.addCancelLinks();
+
     this.imageDeleteLinks();
     this.htmlListeners();
     this.applyCookies();
 
-    // Re-applied once AJAX form is loaded in
     this.deleteNoForm();
+
+    // Re-applied once AJAX form is loaded in
     if (this.$filter_form.length) {
       this.filterSelect();
       this.filterSubmission();
@@ -84,6 +87,25 @@ Fae.form.ajax = {
   },
 
   /**
+   * Click event listener for cancel links applied to both index and nested forms; clears form to prevent saving errors
+   */
+  addCancelLinks: function() {
+    var _this = this;
+
+    this.$addedit_form.on('click', '.js-cancel-nested', function(ev) {
+      ev.preventDefault();
+      var $this = $(this);
+      var $form_wrapper = $this.closest('.js-addedit-form-wrapper');
+
+      if ($form_wrapper.length) {
+        $form_wrapper.slideUp('normal', function(){
+          $form_wrapper.empty();
+        });
+      }
+    });
+  },
+
+  /**
    * Once form is submitted and receives a successful AJAX response, replace form data and initialize listeners on nested elements
    * @fires {@link navigation.fadeNotices}
    */
@@ -126,7 +148,6 @@ Fae.form.ajax = {
           FCH.smoothScroll($this.find('.js-addedit-form-wrapper'), 500, 100, 120);
         }
 
-        _this.deleteNoForm();
         if (_this.$filter_form.length) {
           _this.filterSelect();
           _this.filterSubmission();
@@ -135,9 +156,11 @@ Fae.form.ajax = {
         Fae.navigation.fadeNotices();
 
       } else if ($target.hasClass('js-asset-delete-link')) {
-        // handle remove asset links
-        $target.parent().fadeOut('fast', function() {
-          $(this).next('.asset-inputs').fadeIn('fast');
+        // handle remove asset links on nested forms
+        var $parent = $target.closest('.asset-actions');
+
+        $parent.fadeOut(function(){
+          $parent.next('.asset-inputs').fadeIn();
         });
       }
     });
@@ -272,12 +295,13 @@ Fae.form.ajax = {
   },
 
   /**
-   * On deletes that don't exist in a form like file upload area
+   * Delete or replace file for non-AJAX'd fields
    */
   deleteNoForm: function() {
     $('.js-asset-delete-link').on('ajax:success', function(){
       var $this = $(this);
       if (!$this.closest('.js-addedit-form-wrapper').length) {
+        // handle remove asset links
         var $parent = $this.closest('.asset-actions');
 
         $parent.fadeOut(function(){
