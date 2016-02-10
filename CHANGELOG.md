@@ -3,7 +3,21 @@
 ## Unreleased
 
 - enhancements
+    + \#50230: Check if Fae Roles have been created before recreating
+    + Added in pattern in the documentation on configuring a Dynamic Relationship with a Page Model.
+    + Added in documentation on configuring a conditionally required field.
+    + Added in ability to pass view_helper#fae_content_form method options that you could give to any other simple form, and connected it to form_helper#fae_input
+    + Added in helper_text option for nested_table
+    + Changed fae_content_form from fae_input into more generic i.input to circumvent the additional methods and clear up an issue validations.
+
 - bugs
+    + \#53380: Don't link destroyed models in change tracker
+    + \#50440: Persist checked state on nested forms
+    + \#53410: Nav should open/close on current items too
+    + \#48759: Index-page filters collapse beneath each other on overflow
+    + Update docs with missing 'not' so it's clear assets aren't cloneable
+    + \#54606: Update initial inject_into_file for routes to handle more variations of file's opening line.
+    + \#54058: Replace accented characters with non-accented counterparts in slug generation
 
 ## 1.2.3
 
