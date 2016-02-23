@@ -1,17 +1,17 @@
-require 'devise'
-require 'judge'
-
 module Fae
   class Engine < ::Rails::Engine
     isolate_namespace Fae
 
     # include libraries
+    require 'devise'
     require 'simple_form'
+    require 'jquery-rails'
     require 'jquery-ui-rails'
     require 'remotipart'
     require 'judge'
     require 'judge/simple_form'
     require 'acts_as_list'
+    require 'slim'
 
     config.autoload_paths += %W(#{config.root}/lib)
 

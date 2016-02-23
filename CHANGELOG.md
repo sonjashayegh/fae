@@ -9,6 +9,8 @@
     + Added in ability to pass view_helper#fae_content_form method options that you could give to any other simple form, and connected it to form_helper#fae_input
     + Added in helper_text option for nested_table
     + Changed fae_content_form from fae_input into more generic i.input to circumvent the additional methods and clear up an issue validations.
+    + \#54548: Set on_prod to false when cloning
+    + \#54625: use FINE logo as background to avoid the need to compile
 
 - bugs
     + \#53380: Don't link destroyed models in change tracker
@@ -18,6 +20,8 @@
     + Update docs with missing 'not' so it's clear assets aren't cloneable
     + \#54606: Update initial inject_into_file for routes to handle more variations of file's opening line.
     + \#54058: Replace accented characters with non-accented counterparts in slug generation
+    + \#54619: Add slim as a gem dependency to support non FINE template apps
+    + \#54169: Require jQuery in the engine
 
 ## 1.2.3
 
