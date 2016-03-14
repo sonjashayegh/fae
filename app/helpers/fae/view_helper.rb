@@ -44,15 +44,22 @@ module Fae
 
     def fae_clone_button(item)
       return if item.blank?
-      link_to "#{@index_path}?from_existing=#{item.id}", method: :post, title: 'Clone', class: 'main_table-action main_table-clone' do
+      link_to "#{@index_path}?from_existing=#{item.id}", method: :post, title: 'Clone', data: { confirm: t('fae.clone_confirmation') }, class: 'main_table-action main_table-clone' do
         concat content_tag :span, nil, class: 'icon-copy'
+      end
+    end
+
+    def fae_delete_button(item)
+      return if item.blank?
+      link_to ['admin', item], method: :delete, data: { confirm: t('fae.delete_confirmation') }, class: 'main_table-action' do
+        concat content_tag :span, nil, class: 'icon-delete_x'
       end
     end
 
     def fae_filter_form(options = {}, &block)
       options[:collection] ||= @items
       options[:action]     ||= "#{@index_path}/filter"
-      options[:title]      ||= "Search #{@klass_humanized.pluralize}"
+      options[:title]      ||= "Search #{@klass_humanized.pluralize.titleize}"
       options[:search]       = true if options[:search].nil?
       options[:cookie_key] ||= false
 
@@ -62,7 +69,7 @@ module Fae
       form_hash['data-cookie-key'] = options[:cookie_key] if options[:cookie_key].present?
 
       filter_header = content_tag(:div, class: 'table-filter-header') do
-        concat content_tag :h2, options[:title]
+        concat content_tag :h4, options[:title]
         concat filter_search_field if options[:search]
       end
 

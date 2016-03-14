@@ -2,6 +2,13 @@ require 'spec_helper'
 
 feature 'fae_nested_table' do
 
+  scenario 'should titleize index header', js: true do
+    admin_login
+    visit admin_selling_points_path
+
+    expect(page.find('.breadcrumbs li:last-child')).to have_content('Selling Points')
+  end
+
   scenario 'should allow adding new items', js: true do
     release = FactoryGirl.create(:release)
 
@@ -68,7 +75,7 @@ feature 'fae_nested_table' do
     expect(page.body).to match(/First.*Middle.*Last/)
 
     within(:css, '#winemakers_section') do
-      handle = all('tbody tr').last.find('.main_content-sortable-handle')
+      handle = all('tbody tr').last.find('.sortable-handle')
       handle.drag_to(find('thead'))
     end
 

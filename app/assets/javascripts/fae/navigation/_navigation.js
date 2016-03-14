@@ -12,7 +12,6 @@ Fae.navigation = {
   init: function() {
     this.selectCurrentNavItem();
     this.utilityNav();
-    this.buttonDropdown();
     this.fadeNotices();
     this.stickyHeaders();
     this.subnavHighlighter.init();
@@ -20,6 +19,8 @@ Fae.navigation = {
     this.clickBack();
     this.language.init();
     this.accordionClickEventListener();
+    this.utilitySearch();
+    this.typeaheadSearch();
   },
 
   resize: function() {
@@ -31,9 +32,8 @@ Fae.navigation = {
    * @fires {@link navigation._updateNavClasses}
    */
   selectCurrentNavItem: function() {
-    var _this = this;
     var current_base_url = window.location.pathname.replace('#', '');
-    var $currentLink = $('#js-main_nav a[href="' + current_base_url + '"]');
+    var $currentLink = $('.js-nav a[href="' + current_base_url + '"]');
 
     /**
      * Apply current nav class or keep looking deeper from path for the answer
@@ -47,9 +47,9 @@ Fae.navigation = {
       url_array.pop();
       mutated_url = url_array.join('/');
 
-      var $currentLink = $('#js-main_nav a[href="' + mutated_url + '"]');
+      var $currentLink = $('.js-nav a[href="' + mutated_url + '"]');
       if ($currentLink.length) {
-        $currentLink.addClass('current');
+        $currentLink.addClass('-current');
 
       } else {
         // Defend from exceeding call stack (SUPER RECURSION)
@@ -62,7 +62,7 @@ Fae.navigation = {
 
     if ($currentLink.length) {
       // Try to find link that matches the URL exactly
-      $currentLink.addClass('current');
+      $currentLink.addClass('-current');
 
     } else {
       // If link can't be found, recursively search for it
@@ -73,8 +73,8 @@ Fae.navigation = {
     $('.js-accordion').each(function() {
       var $this = $(this);
 
-      if($this.find('.current').length) {
-        $this.addClass('current');
+      if($this.find('.-current').length) {
+        $this.addClass('-current');
 
         if(FCH.bp.large) {
           $this.addClass('-open');
@@ -131,7 +131,7 @@ Fae.navigation = {
     $el.addClass('-open');
 
     if(FCH.bp.large) {
-      $el.find('.main_nav-sub-nav').first().stop().slideDown();
+      $el.find('.js-subnav').first().stop().slideDown();
     }
   },
 
@@ -142,7 +142,7 @@ Fae.navigation = {
    */
   close: function($el) {
     if(FCH.bp.large) {
-      $el.find('.main_nav-sub-nav')
+      $el.find('.js-subnav')
         .first()
         .stop()
         .slideUp()
@@ -164,7 +164,7 @@ Fae.navigation = {
    */
   closeAll: function(nuclear) {
     var _this = this;
-    $('html').removeClass( 'menu-active' );
+    $('html').removeClass( 'mobile-active' );
 
     $('.js-accordion').each(function(){
       var $this = $(this);
@@ -181,16 +181,15 @@ Fae.navigation = {
    * Mobile - Push body over and display nav
    */
   openDrawer: function() {
-    var _this = this;
     var $html = $('html');
 
-    $('#js-main_nav-menu_button').click(function(e){
+    $('#js-mobilenav-toggle').click(function(e){
       e.preventDefault();
 
-      if ($html.hasClass( 'menu-active' )) {
+      if ($html.hasClass( 'mobile-active' )) {
         Fae.navigation.closeAll(true);
       } else {
-        $html.addClass( 'menu-active' );
+        $html.addClass( 'mobile-active' );
       }
     });
   },
@@ -199,8 +198,6 @@ Fae.navigation = {
    * Mobile - Collapse sub headers on sub nav click
    */
   clickBack: function() {
-    var _this = this;
-
     $('.js-mobile-back').click(function(e){
       e.preventDefault();
 
@@ -214,44 +211,100 @@ Fae.navigation = {
    * Utility nav drop down
    */
   utilityNav: function() {
-    $('.utility_nav-user > a, .utility_nav-view > a').on('click', function(e) {
+    $('.js-utility-dropdown').on('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      var $sub_nav = $(this);
+      var $this = $(this);
 
       // there could be more than one. so remove all of the clicked statuses and add to the specific one
-      $('.utility_nav-clicked').removeClass('utility_nav-clicked');
-      $sub_nav.addClass('utility_nav-clicked');
+      $this.siblings().removeClass('active');
+      $this.toggleClass('active');
 
-      // assign a once function to close the menus
-      FCH.$document.on('click.utility_nav', function(e){
-        // as long as the click is not in the menu
-        if (!$(e.target).closest('.utility_sub_nav').length) {
-          // remove the class from the utility nav
-          $sub_nav.removeClass('utility_nav-clicked');
+      /**
+       * Close utility menu when click occurs on the document
+       * @private
+       */
+      function closeToggleMenu() {
+        $('.js-utility-dropdown.active').removeClass('active');
 
-          // unbind the click from the document, no need to keep it around.
-          FCH.$document.off('click.utility_nav');
-        }
-      });
+        // Unbind - no longer necessary to keep listening for the click
+        FCH.$document.off('click', closeToggleMenu);
+      }
+
+      FCH.$document.on('click', closeToggleMenu);
     });
   },
 
   /**
-   * Toggle class on button dropdown; close dropdown on click anywhere
+   * Click event of the admin search in the main nav
    */
-  buttonDropdown: function() {
-    // button dropdown class toggle
-    $('.button-dropdown').click(function(){
-      $(this).toggleClass('button-dropdown--opened');
-    });
+  utilitySearch: function() {
+    $('#js-utility-search').click(function() {
+      var $this = $(this);
 
-    // button dropdown click anywhere but the dropdown close
-    FCH.$document.click(function(e){
-      if (!$(e.target).closest('.button-dropdown').length) {
-        $('.button-dropdown').removeClass('button-dropdown--opened');
+      if($this.hasClass('active')) {
+        $this.find('input').focus();
       }
     });
+  },
+
+  /**
+   * Initialize the typeahead navigation in the header nav
+   */
+  typeaheadSearch: function() {
+    function onTypeaheadSelected(ev, data) {
+      window.location.href = data.path;
+    }
+
+    function onTypeaheadFocused() {
+      $(this).attr('placeholder', '');
+    }
+
+    function onTypeaheadBlur() {
+      if($(this).val() === '') {
+        $(this).attr('placeholder', 'Jump to...');
+      }
+    }
+
+    var sample_data = [
+      {
+        fae_display_field: 'Releases'
+      },
+      {
+        fae_display_field: 'Wines'
+      },
+      {
+        fae_display_field: 'Coaches'
+      }
+    ];
+
+    var models = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('fae_display_field'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      // prefetch: {
+      //   url: '/data/models.json',
+      //   ttl: 60000
+      // }
+      local: sample_data
+    });
+    models.initialize();
+
+    $('#js-search').typeahead(
+      {
+        hint: true,
+        highlight: true,
+        minLength: 2,
+        autoselect: true
+      },
+      {
+        name: 'models',
+        displayKey: 'fae_display_field',
+        source: models.ttAdapter()
+      }
+    )
+    .on('typeahead:selected', onTypeaheadSelected)
+    .on('typeahead:focused', onTypeaheadFocused)
+    .on('typeahead:blur', onTypeaheadBlur);
   },
 
   /**
@@ -263,12 +316,30 @@ Fae.navigation = {
 
   /**
    * Stick the header in the content area
+   * @param {Boolean} [just_headers=false] Only initialize stickiness for `.js-content-header`
    */
-  stickyHeaders: function() {
-    $(".main_content-header").sticky();
-    $("#js-main_nav").sticky({
-      make_placeholder: false
-    });
+  stickyHeaders: function(just_headers) {
+    just_headers = FCH.setDefault(just_headers, false);
+
+
+    if(FCH.exists('.js-content-header')) {
+      var $header = $('.js-content-header');
+      var sidebar_top_offset = (parseInt( $header.css('height'), 10) + 20) + 'px';
+      $('#js-sidenav').css('padding-top',  sidebar_top_offset );
+
+      $header.sticky({
+        placeholder: true,
+        perpetual_placeholder: true
+      });
+    } else {
+      $('.main_content-header').sticky({
+        placeholder: true
+      });
+    }
+
+    if(!just_headers) {
+      $('#js-sidenav').sticky();
+    }
   },
 
 };

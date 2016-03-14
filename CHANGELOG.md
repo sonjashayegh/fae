@@ -1,10 +1,17 @@
 # Fae Changelog
 
-## Unreleased
+## 1.3
 
 - enhancements
+    + \#54683: Titleize names for forms
+    + \#55066: Major HTML and SCSS refactor
+    + \#55211: Change wording of "Replace Image" to be "Remove Image"
+    + \#55188: Add version and GitHub icon to footer on all pages
+    + Add `fae_delete_button` helper method
+    + \#54556: Add confirm dialogue before cloning
 - bugs
-    + Update hash-parsing library to Fryr and fix cookie/hash filtering on load
+    + \#46537: Change root settings header to be 'Root Settings' and not 'Edit Option'
+    + \#46157: Logo in root setting is no longer marked required
 
 ## 1.2.4
 

@@ -27,7 +27,7 @@
     $el.addClass('js-will-be-sticky');
 
     // create a placeholder
-    if (this.options.make_placeholder) {
+    if (this.options.placeholder) {
       this.createPlaceholder(height);
     }
 
@@ -45,12 +45,17 @@
    * @param {Number} height - Size of stuck element
    */
   Sticky.prototype.createPlaceholder = function(height) {
+    var css_properties = {
+      height: height
+    };
+
+    if(!this.options.perpetual_placeholder) {
+      css.display = 'none';
+    }
+
     var $placeholder = $('<div />', {
        class: this.options.placeholder_name,
-       css: {
-        height: height,
-        display: 'none'
-      }
+       css: css_properties
     });
 
     $placeholder.insertAfter(this.$el);
@@ -79,9 +84,8 @@
    */
   Sticky.prototype._stickItLogic = function() {
     if (FCH.$window.scrollTop() >= this.dimensions.top) {
-      if (this.options.make_placeholder) {
+      if (this.options.placeholder) {
         this.$placeholder.show();
-        this.$el.css({ width: this.$placeholder.width() });
       }
 
       this.$el
@@ -102,9 +106,13 @@
   Sticky.prototype._unStick = function() {
     this.$el
       .removeClass(this.options.class_name)
-      .removeAttr('style');
+      .css({
+        top: '',
+        left: '',
+        position: ''
+      });
 
-    if (this.options.make_placeholder) {
+    if (this.options.placeholder && !this.options.perpetual_placeholder) {
       this.$placeholder.hide();
     }
   };
@@ -115,10 +123,11 @@
   Sticky.prototype.windowListeners = function() {
     var _this = this;
 
-    var scrollCallback = function() {
+    function scrollCallback() {
       _this.stickIt();
-    };
-    FCH.scroll.push(scrollCallback);
+    }
+
+    FCH.scroll.push( scrollCallback );
 
     FCH.$window.smartresize(function(){
       if ( _this.$placeholder && _this.$placeholder.is(':visible')) {
@@ -133,6 +142,14 @@
 
       _this.stickIt();
     });
+
+    if (this.options.placeholder) {
+      function resizePlaceholder() {
+        _this.$placeholder.css( 'height', _this.$el.outerHeight() );
+      }
+
+      FCH.resize.push( resizePlaceholder );
+    }
   };
 
   /**
@@ -144,9 +161,9 @@
     var defaults = {
       class_name: 'js-sticky',
       placeholder_name: 'js-sticky-placeholder',
-      make_placeholder: true,
+      placeholder: false,
       offset: 0,
-      header_selector: '#main_header'
+      perpetual_placeholder: false
     };
 
     // unite the default options with the passed-in ones

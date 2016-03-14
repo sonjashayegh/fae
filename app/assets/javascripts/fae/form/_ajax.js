@@ -52,7 +52,7 @@ Fae.form.ajax = {
 
   /**
    * Once add or edit is clicked, load remote data, add it to the DOM and initialize listeners on the new create form
-   * @access protected
+   * @protected
    * @param {String} remote_url - Remote page to load form from
    * @param {jQuery} $wrapper - Whole form container
    * @see addEditLinks
@@ -92,8 +92,6 @@ Fae.form.ajax = {
    * Click event listener for cancel links applied to both index and nested forms; clears form to prevent saving errors
    */
   addCancelLinks: function() {
-    var _this = this;
-
     this.$addedit_form.on('click', '.js-cancel-nested', function(ev) {
       ev.preventDefault();
       var $this = $(this);
@@ -128,26 +126,19 @@ Fae.form.ajax = {
           $html = $( $html.val() );
         }
 
-        if ($html && ($html.hasClass('main_content-section-area') || $html.hasClass('js-index-addedit-form'))) {
-          // we're returning the table, replace everything
-          var replacementHTML;
+        if ($html) {
+          if($html.hasClass('js-addedit-form') || $html.hasClass( 'js-index-addedit-form' )) {
+            // we're returning the table, replace everything
+            _this._addEditReplaceAndReinit($this, $html.html(), $target);
+          } else if ($html.hasClass('form_content-wrapper')) {
 
-          // Response is different between the js-index-addedit-form and the nested association form
-          if ($html.hasClass('main_content-section-area')) {
-            replacementHTML = $html.find('.js-addedit-form').get(0).outerHTML;
-          } else {
-            replacementHTML = $html.html();
+            // we're returning the form due to an error, just replace the form
+            $this.find('.form_content-wrapper').replaceWith(data);
+            $this.find('.select select').fae_chosen();
+            $this.find('.input.file').fileinputer();
+
+            FCH.smoothScroll($this.find('.js-addedit-form-wrapper'), 500, 100, 120);
           }
-
-          _this._addEditReplaceAndReinit($this, replacementHTML, $target);
-
-        } else if ($html.hasClass('form_content-wrapper')) {
-          // we're returning the form due to an error, just replace the form
-          $this.find('.form_content-wrapper').replaceWith(data);
-          $this.find('.select select').fae_chosen();
-          $this.find('.input.file').fileinputer();
-
-          FCH.smoothScroll($this.find('.js-addedit-form-wrapper'), 500, 100, 120);
         }
 
         if (_this.$filter_form.length) {
@@ -170,7 +161,7 @@ Fae.form.ajax = {
 
   /**
    * Replace AJAX'd form and add calls to all new HTML elements
-   * @access protected
+   * @protected
    * @param $el {jQuery} - Object to be replaced
    * @param html {String} - New HTML
    * @param $target {jQuery} - Original form wrapper
@@ -180,12 +171,17 @@ Fae.form.ajax = {
     var $form_wrapper = $el.find('.js-addedit-form-wrapper');
 
     // Private function replaces parent element with HTML and reinits select and sorting
-    var regenerateHTML = function() {
+    function regenerateHTML() {
       // .html() is not replacing it properly
       $el.get(0).innerHTML = html;
       $el.find('.select select').fae_chosen();
       Fae.tables.rowSorting();
-    };
+      Fae.navigation.fadeNotices();
+
+      if ($el.find('.js-content-header').length) {
+        Fae.navigation.stickyHeaders(true);
+      }
+    }
 
     // if there's a form wrap, slide it up before replacing content
     if ($form_wrapper.length) {
@@ -335,7 +331,7 @@ Fae.form.ajax = {
    * Attaching click handlers to #main_content to allow ajax replacement
    */
   htmlListeners: function() {
-    $('#main_content')
+    $('#js-main-content')
 
       // for the yes/no slider
       .on('click', '.slider-wrapper', function(e){
@@ -344,7 +340,7 @@ Fae.form.ajax = {
       })
 
       // The settings menu for tables and checkboxe
-      .on('click', '.main_table-action_menu-trigger, .boolean label, .checkbox_collection--vertical label, .checkbox_collection--horizontal label', function(e){
+      .on('click', '.boolean label, .checkbox_collection--vertical label, .checkbox_collection--horizontal label', function(e){
         $(this).toggleClass('js-active');
       })
 

@@ -298,7 +298,7 @@ Displays the filter form, including the search field, submit and reset buttons. 
 | option | type    | default                                | description |
 |--------|---------|----------------------------------------|-------------|
 | action | string  | "#{@index_path}/filter" | the path the form submits to |
-| title  | string  | "Search #{@klass_humanized.pluralize}" | the h2 text in the filter form |
+| title  | string  | "Search #{@klass_humanized.pluralize.titleize}" | the h2 text in the filter form |
 | search | boolean | true                                   | displays the search field |
 | cookie_key | string | false | set your cookie name on the fae_filter_form if you want to persist selected filtered state |
 
@@ -364,13 +364,19 @@ fae_toggle item, :on_prod
 
 ## fae_clone_button
 
-You can use fae_clone_button in your list view tables to provide easy access to clone an item. Just pass in the item and the button will clone the object and take you to the newly created object's edit form.
+You can use `fae_clone_button` in your list view tables to provide easy access to clone an item. Just pass in the item and the button will clone the object and take you to the newly created object's edit form.
 
 ```ruby
 fae_clone_button item
 ```
 
-More info about cloning can be found here: [cloning.md](cloning.md)
+## fae_delete_button
+
+You can use `fae_delete_button` in your list view tables to provide easy access to delete an item.
+
+```ruby
+fae_delete_button item
+```
 
 ## form_header
 
@@ -407,10 +413,11 @@ Displays page title, add button and flash messages.
 | option | type | default | description |
 |-|-|-|-|
 | nested | boolean | false | converts normal add button to nested add button
-| title | string | @klass_humanized.pluralize | the page's H1 |
+| title | string | @klass_humanized.pluralize.titleize | the page's H1 |
 | new_button | boolean | true | displays the add button |
 | button_text | string | "Add #{title.singularize}" | add button text |
 | csv | boolean | false | adds export to csv button |
+| breadcrumbs | boolean | true | display breadcrumb navigation before title |
 
 **Examples**
 
@@ -432,6 +439,8 @@ Displays breadcrumb links and form title.
 |--------|------|-------------|
 | header | ActiveRecord object | **(required)** passed to form_header helper method  |
 | breadcrumb_text | String | passed to form_header helper method, defaults to klass_name.titleize.pluralize  |
+| save_button_text (`v1.3 <=`)   | string | 'Save Settings' | save button text |
+| cancel_button_text (`v1.3 <=`) | string | 'Cancel' | cancel button text  |
 
 **Examples**
 
@@ -441,6 +450,7 @@ render 'fae/shared/form_header', header: @item, breadcrumb_text: "Areas of Focus
 ```
 
 ## form_buttons
+**Warning**: This partial will be depreceated in v2.0. Use `fae/shared/form_header` instead.
 
 Displays form's save and cancel buttons.
 
@@ -488,7 +498,7 @@ The nested_table should go after the main form ends and should only placed on th
 Full Slim implementation with section wrapper and edit page conditional
 ```slim
 - if params[:action] == 'edit'
-  section.main_content-section
+  section.content
     = render 'fae/shared/nested_table',
       assoc: :tasting_notes,
       parent_item: @item,
@@ -511,8 +521,8 @@ render 'fae/shared/recent_changes'
 
 Optionally, you can add a link to it in the form nav:
 ```slim
-nav.main_content-header-section
-  ul.main_content-header-section-links
+nav.content-header.js-content-header
+  ul.content-header-subnav.js-content-header-subnav
     - if params[:action] == 'edit'
       li: a href="#recent_changes" Recent Changes
 ```

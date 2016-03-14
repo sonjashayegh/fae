@@ -1,0 +1,125 @@
+// content header
+.content-header {
+  @include clearfix;
+  width: 100%;
+  padding: 24px $content-buffer;
+  background: $c-content-header-bg;
+  border-bottom: 1px solid $c-border;
+  position: absolute;
+  left: 0;
+
+  &:after {
+    content: '';
+    display: block;
+    height: 100%;
+    position: static;
+  }
+
+  h1,
+  .breadcrumbs {
+    @include bp(large) {
+      display: inline-block;
+      vertical-align: middle;
+      width: 70%;
+    }
+  }
+
+  h1 {
+    padding: 5px 0;
+    font-weight: bold;
+  }
+}
+
+.main_content-section-toggles {
+  list-style: none;
+  margin: -25px negate($content-buffer) 5px;
+  padding: 0 $content-buffer;
+
+  li {
+    display: inline-block;
+
+    a {
+      @include transition(color 0s, background 0.4s);
+      display: block;
+      padding: 11px 13px 10px;
+      color: $c-text-sub;
+      font-size: 13px;
+      border-radius: 0 0 3px 3px;
+
+      &.active,
+      &:hover {
+        background: $c-custom-highlight;
+        color: $c-white;
+      }
+    }
+  }
+}
+
+.content-header-subnav {
+  margin-top: 5px;
+  margin-bottom: -24px;
+
+  a {
+    @include transition(all .2s);
+    display: inline-block;
+    vertical-align: top;
+    padding: 8px 0;
+    border-bottom: 5px solid $c-content-header-bg;
+    margin: 0 8px;
+    font-size: 13px;
+    color: $c-text-sub;
+
+    &:hover {
+      color: $c-text-heavy;
+      border-bottom-color: $c-custom-highlight;
+    }
+  }
+
+  li {
+    display: inline-block;
+    vertical-align: top;
+
+    &:first-child {
+      a {
+        margin-left: 0;
+      }
+    }
+
+    &.-active {
+      a {
+        color: $c-text-heavy;
+        border-bottom-color: $c-custom-highlight;
+      }
+    }
+  }
+}
+
+.content-header-buttons {
+  margin: 10px 0;
+
+  @include bp(large) {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: right;
+    width: 30%;
+    margin: 0;
+  }
+
+  a {
+    margin-right: 5px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:not(.add-button) {
+      @extend %gray-button;
+      font-size: 13px;
+    }
+
+  }
+
+  input[type=submit] {
+    padding: 10px 14px 11px;
+  }
+}
